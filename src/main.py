@@ -1,61 +1,38 @@
 from flask import Flask, send_from_directory, jsonify, request
 from flask_cors import CORS
-import subprocess
 import os
-import signal
-import time
-import threading
 
-app = Flask(__name__)
+# Get the directory containing this file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
+
+app = Flask(__name__, static_folder=os.path.join(project_root, 'public'))
 CORS(app)
-
-# Global variable to store the Node.js process
-node_process = None
-
-def start_node_server():
-    """Start the Node.js server"""
-    global node_process
-    try:
-        node_process = subprocess.Popen(
-            ['node', 'src/server.js'],
-            cwd='/home/ubuntu/crystal-power-whatsapp',
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        print(f"Node.js server started with PID: {node_process.pid}")
-    except Exception as e:
-        print(f"Error starting Node.js server: {e}")
-
-def stop_node_server():
-    """Stop the Node.js server"""
-    global node_process
-    if node_process:
-        try:
-            node_process.terminate()
-            node_process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            node_process.kill()
-        print("Node.js server stopped")
 
 @app.route('/')
 def index():
     """Serve the main dashboard"""
-    return send_from_directory('public', 'index.html')
+    return send_from_directory(os.path.join(project_root, 'public'), 'index.html')
 
 @app.route('/privacy-policy')
 def privacy_policy():
     """Serve the privacy policy"""
-    return send_from_directory('public', 'privacy-policy.html')
+    return send_from_directory(os.path.join(project_root, 'public'), 'privacy-policy.html')
 
 @app.route('/api-testing')
 def api_testing():
     """Serve the API testing dashboard"""
-    return send_from_directory('public', 'api-testing-dashboard.html')
+    return send_from_directory(os.path.join(project_root, 'public'), 'api-testing-dashboard.html')
+
+@app.route('/dashboard')
+def dashboard():
+    """Alternative route for main dashboard"""
+    return send_from_directory(os.path.join(project_root, 'public'), 'index.html')
 
 @app.route('/static/<path:filename>')
 def static_files(filename):
     """Serve static files"""
-    return send_from_directory('public', filename)
+    return send_from_directory(os.path.join(project_root, 'public'), filename)
 
 @app.route('/health')
 def health():
@@ -64,51 +41,80 @@ def health():
         'status': 'healthy',
         'service': 'Crystal Power WhatsApp Business API',
         'version': '1.0.0',
-        'node_server': 'running' if node_process and node_process.poll() is None else 'stopped'
+        'deployment': 'production',
+        'legal_status': 'requires_review',
+        'compliance': 'egypt_pdpl_ready'
     })
 
-@app.route('/webhook', methods=['GET', 'POST'])
-def webhook_proxy():
-    """Proxy webhook requests to Node.js server"""
-    import requests
-    try:
-        if request.method == 'GET':
-            response = requests.get('http://localhost:3000/webhook', params=request.args)
-        else:
-            response = requests.post('http://localhost:3000/webhook', 
-                                   json=request.get_json(), 
-                                   headers={'Content-Type': 'application/json'})
-        return response.text, response.status_code
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@app.route('/status')
+def status():
+    """Deployment status endpoint"""
+    return jsonify({
+        'application': 'Crystal Power WhatsApp Business API',
+        'version': '1.0.0',
+        'status': 'deployed',
+        'github_repository': 'https://github.com/CPInvestMo/crystal-power-whatsapp',
+        'deployment_url': 'https://p9hwiqcqwkml.manus.space',
+        'features': {
+            'whatsapp_business_api': 'ready',
+            'ai_lead_processing': 'ready',
+            'property_matching': 'ready',
+            'egypt_pdpl_compliance': 'implemented',
+            'analytics_dashboard': 'ready'
+        },
+        'legal_requirements': {
+            'legal_counsel_review': 'required',
+            'dpo_certification': 'required',
+            'executive_authorization': 'required',
+            'pdpc_registration': 'required',
+            'insurance_verification': 'required'
+        },
+        'next_steps': [
+            'Complete legal review with qualified Egyptian data privacy counsel',
+            'Obtain Data Protection Officer certification',
+            'Get Crystal Power Investments executive authorization',
+            'Verify PDPC registration status',
+            'Confirm insurance coverage',
+            'Configure WhatsApp Business API credentials',
+            'Deploy to production domain'
+        ]
+    })
 
-@app.route('/api/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'PATCH'])
-def api_proxy(path):
-    """Proxy API requests to Node.js server"""
-    import requests
-    try:
-        url = f'http://localhost:3000/{path}'
-        if request.method == 'GET':
-            response = requests.get(url, params=request.args)
-        else:
-            response = requests.request(
-                request.method, 
-                url, 
-                json=request.get_json(),
-                headers={'Content-Type': 'application/json'}
-            )
-        return response.text, response.status_code
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+@app.route('/docs')
+def documentation():
+    """Documentation endpoint"""
+    return jsonify({
+        'documentation': {
+            'github_repository': 'https://github.com/CPInvestMo/crystal-power-whatsapp',
+            'readme': 'https://github.com/CPInvestMo/crystal-power-whatsapp/blob/main/README.md',
+            'deployment_guide': 'https://github.com/CPInvestMo/crystal-power-whatsapp/blob/main/DEPLOYMENT.md',
+            'legal_compliance': 'https://github.com/CPInvestMo/crystal-power-whatsapp/blob/main/docs/LEGAL-DEPLOYMENT-CHECKLIST.md'
+        },
+        'api_endpoints': {
+            '/': 'Main dashboard interface',
+            '/privacy-policy': 'PDPL-compliant privacy policy',
+            '/api-testing': 'API testing dashboard',
+            '/health': 'Health check endpoint',
+            '/status': 'Deployment status information',
+            '/docs': 'This documentation endpoint'
+        }
+    })
+
+@app.errorhandler(404)
+def not_found(error):
+    """Custom 404 handler"""
+    return jsonify({
+        'error': 'Not Found',
+        'message': 'The requested resource was not found',
+        'available_endpoints': [
+            '/ - Main dashboard',
+            '/privacy-policy - Privacy policy',
+            '/api-testing - API testing',
+            '/health - Health check',
+            '/status - Deployment status',
+            '/docs - Documentation'
+        ]
+    }), 404
 
 if __name__ == '__main__':
-    # Start Node.js server in background
-    threading.Thread(target=start_node_server, daemon=True).start()
-    
-    # Give Node.js server time to start
-    time.sleep(3)
-    
-    try:
-        app.run(host='0.0.0.0', port=5000, debug=False)
-    finally:
-        stop_node_server()
+    app.run(host='0.0.0.0', port=5000, debug=False)
