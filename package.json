@@ -2,12 +2,12 @@
   "name": "crystal-power-whatsapp-webhook",
   "version": "1.0.0",
   "description": "Crystal Power Investments - WhatsApp Business API Webhook for Real Estate Lead Capture",
-  "main": "webhook-server.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node webhook-server.js",
-    "dev": "nodemon webhook-server.js",
-    "test": "node test-webhook.js",
-    "test:webhook": "node test-webhook.js",
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node tests/test-webhook.js",
+    "test:webhook": "node tests/test-webhook.js",
     "health": "curl http://localhost:3000/health",
     "deploy": "echo 'Deploy to your hosting platform'",
     "logs": "echo 'View application logs'"
@@ -40,10 +40,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/crystal-power-investments/whatsapp-webhook"
+    "url": "https://github.com/CPInvestMo/crystal-power-whatsapp"
   },
   "bugs": {
-    "url": "https://github.com/crystal-power-investments/whatsapp-webhook/issues"
+    "url": "https://github.com/CPInvestMo/crystal-power-whatsapp/issues"
   },
   "homepage": "https://crystalpower.eg"
 }
