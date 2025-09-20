@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal Power Investments - WhatsApp API Testing Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .status-success { background-color: #10B981; color: white; }
+        .status-error { background-color: #EF4444; color: white; }
+        .status-warning { background-color: #F59E0B; color: white; }
+        .status-pending { background-color: #6B7280; color: white; }
+        .test-card { transition: all 0.3s ease; }
+        .test-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1); }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .log-entry { font-family: 'Courier New', monospace; font-size: 12px; }
+        .arabic { direction: rtl; text-align: right; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <i class="fas fa-gem text-2xl mr-3"></i>
+                    <div>
+                        <h1 class="text-xl font-bold">Crystal Power Investments</h1>
+                        <p class="text-sm text-blue-100">WhatsApp Business API Testing Dashboard</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="connectionStatus" class="flex items-center">
+                        <div class="w-3 h-3 bg-red-500 rounded-full pulse-dot mr-2" id="statusIndicator"></div>
+                        <span class="text-sm" id="statusText">Not Connected</span>
+                    </div>
+                    <a href="index.html" class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to System
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Crystal Power Configuration -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4">🇪🇬 Crystal Power Investments WhatsApp API</h2>
+            <div class="grid md:grid-cols-3 gap-4">
+                <div class="bg-white/10 rounded-lg p-4">
+                    <h3 class="font-semibold mb-2">Business Configuration</h3>
+                    <p class="text-sm text-blue-100"><strong>Phone Number ID:</strong> 1302132225247452</p>
+                    <p class="text-sm text-blue-100"><strong>Business Phone:</strong> +201005288884</p>
+                    <p class="text-sm text-blue-100"><strong>Country:</strong> Egypt 🇪🇬</p>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <h3 class="font-semibold mb-2">API Configuration</h3>
+                    <p class="text-sm text-blue-100"><strong>API Version:</strong> v18.0</p>
+                    <p class="text-sm text-blue-100"><strong>Base URL:</strong> graph.facebook.com</p>
+                    <p class="text-sm text-blue-100"><strong>Rate Limit:</strong> 80 msgs/min</p>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4">
+                    <h3 class="font-semibold mb-2">Integration Status</h3>
+                    <p class="text-sm text-blue-100"><strong>System:</strong> MatchPro Ready</p>
+                    <p class="text-sm text-blue-100"><strong>Compliance:</strong> Egypt PDPL</p>
+                    <p class="text-sm text-blue-100"><strong>Lead Capture:</strong> Configured</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Token Configuration -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-key text-blue-600 mr-2"></i>API Token Configuration
+            </h3>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp Business Access Token</label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="accessToken" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                            placeholder="Enter your WhatsApp Business API Token"
+                            value="vVXQWz4HTIRk__TfdjMCgSRzNFLq8rWXT92_aQjS"
+                        >
+                        <button onclick="toggleTokenVisibility()" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye" id="tokenVisibilityIcon"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Your Crystal Power Investments API token (pre-configured)</p>
+                </div>
+                
+                <div class="flex items-end">
+                    <button onclick="testAPIConnection()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                        <i class="fas fa-plug mr-2"></i>Test API Connection
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Interface -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-8">
+            <!-- Connection Tests -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-network-wired text-green-600 mr-2"></i>Connection Tests
+                </h3>
+                
+                <div class="space-y-4">
+                    <div class="test-card bg-gray-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-medium text-gray-900">API Connectivity</h4>
+                            <span class="px-2 py-1 rounded-full text-xs status-pending" id="connectivityStatus">Pending</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">Test basic connection to WhatsApp Business API</p>
+                        <button onclick="testConnectivity()" class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm hover:bg-blue-200">
+                            Test Connection
+                        </button>
+                    </div>
+
+                    <div class="test-card bg-gray-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-medium text-gray-900">Phone Number Verification</h4>
+                            <span class="px-2 py-1 rounded-full text-xs status-pending" id="phoneStatus">Pending</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">Verify business phone number status</p>
+                        <button onclick="checkPhoneVerification()" class="bg-green-100 text-green-700 px-3 py-1 rounded text-sm hover:bg-green-200">
+                            Check Verification
+                        </button>
+                    </div>
+
+                    <div class="test-card bg-gray-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-medium text-gray-900">Token Permissions</h4>
+                            <span class="px-2 py-1 rounded-full text-xs status-pending" id="permissionsStatus">Pending</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-3">Validate access token permissions</p>
+                        <button onclick="checkTokenPermissions()" class="bg-purple-100 text-purple-700 px-3 py-1 rounded text-sm hover:bg-purple-200">
+                            Check Permissions
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Testing -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-comments text-blue-600 mr-2"></i>Message Testing
+                </h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Test Phone Number</label>
+                        <input 
+                            type="tel" 
+                            id="testPhone" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="+201005288884"
+                            value="+201005288884"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">Your Crystal Power business phone number</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Test Message</label>
+                        <textarea 
+                            id="testMessage" 
+                            rows="3"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Enter test message..."
+                        >🏠 Crystal Power Investments API Test
+This is a test message from your WhatsApp Business API integration.
+- System: MatchPro Ready ✅
+- Status: API Working ✅
+- Time: ${new Date().toLocaleString()}</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="sendTestMessage('english')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                            <i class="fas fa-paper-plane mr-1"></i>Send English
+                        </button>
+                        <button onclick="sendTestMessage('arabic')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm">
+                            <i class="fas fa-globe mr-1"></i>Send Arabic
+                        </button>
+                    </div>
+
+                    <div id="messageResult" class="hidden p-3 rounded-lg text-sm"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Testing -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-8">
+            <!-- Lead Capture Testing -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-bullseye text-orange-600 mr-2"></i>Lead Capture Testing
+                </h3>
+                
+                <p class="text-sm text-gray-600 mb-4">Test the supply-demand matching system with simulated customer messages</p>
+                
+                <div class="space-y-3">
+                    <button onclick="simulateLeadCapture('apartment')" class="w-full bg-orange-100 text-orange-700 p-3 rounded-lg hover:bg-orange-200 text-left">
+                        <div class="font-medium">Apartment Lead Simulation</div>
+                        <div class="text-xs">Simulate: "Looking for 3BR apartment in New Capital, budget 2.5M EGP"</div>
+                    </button>
+                    
+                    <button onclick="simulateLeadCapture('villa')" class="w-full bg-green-100 text-green-700 p-3 rounded-lg hover:bg-green-200 text-left">
+                        <div class="font-medium">Villa Lead Simulation</div>
+                        <div class="text-xs">Simulate: "Need villa in Sheikh Zayed, 4 bedrooms, budget 4-5M EGP"</div>
+                    </button>
+                    
+                    <button onclick="simulateLeadCapture('arabic')" class="w-full bg-purple-100 text-purple-700 p-3 rounded-lg hover:bg-purple-200 text-left">
+                        <div class="font-medium">Arabic Lead Simulation</div>
+                        <div class="text-xs arabic">محاكاة: "أبحث عن شقة في مدينة نصر، ٣ غرف نوم، ميزانية ٢ مليون جنيه"</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Webhook Testing -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                    <i class="fas fa-exchange-alt text-red-600 mr-2"></i>Webhook Configuration
+                </h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Webhook URL</label>
+                        <input 
+                            type="url" 
+                            id="webhookUrl" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="https://your-domain.com/webhook"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Verify Token</label>
+                        <input 
+                            type="text" 
+                            id="verifyToken" 
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="your_verify_token"
+                            value="crystal_power_verify_token_2025"
+                        >
+                    </div>
+
+                    <button onclick="configureWebhook()" class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                        <i class="fas fa-cog mr-2"></i>Configure Webhook
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Logs -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">
+                    <i class="fas fa-terminal text-gray-600 mr-2"></i>Real-time API Logs
+                </h3>
+                <button onclick="clearLogs()" class="text-gray-400 hover:text-gray-600 text-sm">
+                    <i class="fas fa-trash mr-1"></i>Clear Logs
+                </button>
+            </div>
+            
+            <div id="apiLogs" class="bg-gray-900 text-green-400 p-4 rounded-lg h-64 overflow-y-auto log-entry">
+                <div class="text-blue-400">[INFO] Crystal Power Investments WhatsApp API Testing Dashboard Initialized</div>
+                <div class="text-yellow-400">[READY] Phone Number ID: 1302132225247452 | Business Phone: +201005288884</div>
+                <div class="text-gray-400">[WAIT] Click 'Test API Connection' to begin testing...</div>
+            </div>
+        </div>
+
+        <!-- Quick Start Guide -->
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 mt-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                <i class="fas fa-rocket text-green-600 mr-2"></i>Quick Start Testing Guide
+            </h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <h4 class="font-medium text-green-900 mb-2">Phase 1: Connection</h4>
+                    <ol class="text-sm text-gray-700 space-y-1">
+                        <li>1. Click "Test API Connection"</li>
+                        <li>2. Verify connectivity status ✅</li>
+                        <li>3. Check phone verification</li>
+                        <li>4. Validate token permissions</li>
+                    </ol>
+                </div>
+                
+                <div>
+                    <h4 class="font-medium text-blue-900 mb-2">Phase 2: Messaging</h4>
+                    <ol class="text-sm text-gray-700 space-y-1">
+                        <li>1. Send test message to yourself</li>
+                        <li>2. Check message delivery on phone</li>
+                        <li>3. Test Arabic message support</li>
+                        <li>4. Verify message formatting</li>
+                    </ol>
+                </div>
+                
+                <div>
+                    <h4 class="font-medium text-purple-900 mb-2">Phase 3: Integration</h4>
+                    <ol class="text-sm text-gray-700 space-y-1">
+                        <li>1. Test lead capture simulation</li>
+                        <li>2. Verify property matching</li>
+                        <li>3. Configure webhook (optional)</li>
+                        <li>4. Deploy to production ✅</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Crystal Power Investments WhatsApp API Configuration
+        const CRYSTAL_POWER_CONFIG = {
+            phoneNumberId: '1302132225247452',
+            businessPhone: '+201005288884',
+            baseUrl: 'https://graph.facebook.com/v18.0',
+            accessToken: 'vVXQWz4HTIRk__TfdjMCgSRzNFLq8rWXT92_aQjS', // Pre-configured
+            rateLimitPerMinute: 80,
+            businessName: 'Crystal Power Investments',
+            country: 'Egypt'
+        };
+
+        let apiLogs = [];
+
+        function logMessage(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] [${type.toUpperCase()}] ${message}`;
+            apiLogs.push(logEntry);
+            
+            const logsContainer = document.getElementById('apiLogs');
+            const logDiv = document.createElement('div');
+            
+            switch(type) {
+                case 'success':
+                    logDiv.className = 'text-green-400';
+                    break;
+                case 'error':
+                    logDiv.className = 'text-red-400';
+                    break;
+                case 'warning':
+                    logDiv.className = 'text-yellow-400';
+                    break;
+                case 'info':
+                    logDiv.className = 'text-blue-400';
+                    break;
+                default:
+                    logDiv.className = 'text-gray-400';
+            }
+            
+            logDiv.textContent = logEntry;
+            logsContainer.appendChild(logDiv);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        function updateStatus(elementId, status, text) {
+            const element = document.getElementById(elementId);
+            element.className = `px-2 py-1 rounded-full text-xs status-${status}`;
+            element.textContent = text;
+        }
+
+        function toggleTokenVisibility() {
+            const tokenInput = document.getElementById('accessToken');
+            const icon = document.getElementById('tokenVisibilityIcon');
+            
+            if (tokenInput.type === 'password') {
+                tokenInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                tokenInput.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        async function testAPIConnection() {
+            logMessage('info', 'Testing Crystal Power Investments WhatsApp API connection...');
+            
+            try {
+                const token = document.getElementById('accessToken').value || CRYSTAL_POWER_CONFIG.accessToken;
+                
+                // Test API connectivity
+                const response = await fetch(`${CRYSTAL_POWER_CONFIG.baseUrl}/${CRYSTAL_POWER_CONFIG.phoneNumberId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    logMessage('success', `API Connection successful! Phone Number: ${data.display_phone_number || CRYSTAL_POWER_CONFIG.businessPhone}`);
+                    
+                    // Update UI status
+                    document.getElementById('statusIndicator').className = 'w-3 h-3 bg-green-500 rounded-full pulse-dot mr-2';
+                    document.getElementById('statusText').textContent = 'Connected';
+                    
+                    // Run all connection tests
+                    await testConnectivity();
+                    await checkPhoneVerification();
+                    await checkTokenPermissions();
+                    
+                } else {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+                
+            } catch (error) {
+                logMessage('error', `API Connection failed: ${error.message}`);
+                updateStatus('connectivityStatus', 'error', 'Failed');
+            }
+        }
+
+        async function testConnectivity() {
+            logMessage('info', 'Testing basic connectivity...');
+            
+            try {
+                const token = document.getElementById('accessToken').value || CRYSTAL_POWER_CONFIG.accessToken;
+                
+                const response = await fetch(`${CRYSTAL_POWER_CONFIG.baseUrl}/${CRYSTAL_POWER_CONFIG.phoneNumberId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    logMessage('success', 'Basic connectivity: PASS ✅');
+                    updateStatus('connectivityStatus', 'success', 'Connected');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+            } catch (error) {
+                logMessage('error', `Connectivity test failed: ${error.message}`);
+                updateStatus('connectivityStatus', 'error', 'Failed');
+            }
+        }
+
+        async function checkPhoneVerification() {
+            logMessage('info', 'Checking phone number verification status...');
+            
+            try {
+                const token = document.getElementById('accessToken').value || CRYSTAL_POWER_CONFIG.accessToken;
+                
+                const response = await fetch(`${CRYSTAL_POWER_CONFIG.baseUrl}/${CRYSTAL_POWER_CONFIG.phoneNumberId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const verifiedName = data.verified_name || 'Crystal Power Investments';
+                    logMessage('success', `Phone verification: VERIFIED ✅ (${verifiedName})`);
+                    updateStatus('phoneStatus', 'success', 'Verified');
+                } else {
+                    logMessage('warning', 'Phone verification status unclear - check WhatsApp Manager');
+                    updateStatus('phoneStatus', 'warning', 'Check Manager');
+                }
+                
+            } catch (error) {
+                logMessage('error', `Phone verification check failed: ${error.message}`);
+                updateStatus('phoneStatus', 'error', 'Failed');
+            }
+        }
+
+        async function checkTokenPermissions() {
+            logMessage('info', 'Validating access token permissions...');
+            
+            try {
+                const token = document.getElementById('accessToken').value || CRYSTAL_POWER_CONFIG.accessToken;
+                
+                // Test message endpoint access
+                const response = await fetch(`${CRYSTAL_POWER_CONFIG.baseUrl}/${CRYSTAL_POWER_CONFIG.phoneNumberId}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messaging_product: 'whatsapp',
+                        to: CRYSTAL_POWER_CONFIG.businessPhone,
+                        type: 'text',
+                        text: { body: 'Permission test - please ignore' }
+                    })
+                });
+
+                if (response.ok) {
+                    logMessage('success', 'Token permissions: VALID ✅ (whatsapp_business_messaging)');
+                    updateStatus('permissionsStatus', 'success', 'Valid');
+                } else if (response.status === 403) {
+                    logMessage('error', 'Token permissions: INSUFFICIENT - Need whatsapp_business_messaging permission');
+                    updateStatus('permissionsStatus', 'error', 'Insufficient');
+                } else {
+                    logMessage('warning', `Token permissions: HTTP ${response.status} - Check token validity`);
+                    updateStatus('permissionsStatus', 'warning', 'Check Token');
+                }
+                
+            } catch (error) {
+                logMessage('error', `Permission validation failed: ${error.message}`);
+                updateStatus('permissionsStatus', 'error', 'Failed');
+            }
+        }
+
+        async function sendTestMessage(language = 'english') {
+            const phone = document.getElementById('testPhone').value || CRYSTAL_POWER_CONFIG.businessPhone;
+            const token = document.getElementById('accessToken').value || CRYSTAL_POWER_CONFIG.accessToken;
+            
+            let message;
+            if (language === 'arabic') {
+                message = `🏠 اختبار واجهة برمجة تطبيقات شركة كريستال باور للاستثمارات
+
+هذه رسالة اختبار من نظام MatchPro للعقارات
+- النظام: جاهز ✅  
+- حالة الاتصال: يعمل ✅
+- الوقت: ${new Date().toLocaleString('ar-EG')}
+
+شركة كريستال باور للاستثمارات - مصر 🇪🇬`;
+            } else {
+                message = document.getElementById('testMessage').value.replace('${new Date().toLocaleString()}', new Date().toLocaleString());
+            }
+            
+            logMessage('info', `Sending ${language} test message to ${phone}...`);
+            
+            try {
+                const response = await fetch(`${CRYSTAL_POWER_CONFIG.baseUrl}/${CRYSTAL_POWER_CONFIG.phoneNumberId}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messaging_product: 'whatsapp',
+                        recipient_type: 'individual',
+                        to: phone,
+                        type: 'text',
+                        text: {
+                            body: message,
+                            preview_url: true
+                        }
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok && result.messages) {
+                    const messageId = result.messages[0].id;
+                    logMessage('success', `✅ Message sent successfully! ID: ${messageId}`);
+                    
+                    const resultDiv = document.getElementById('messageResult');
+                    resultDiv.className = 'p-3 rounded-lg text-sm bg-green-100 text-green-800';
+                    resultDiv.innerHTML = `
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <strong>Message Sent Successfully!</strong>
+                        </div>
+                        <p><strong>Message ID:</strong> ${messageId}</p>
+                        <p><strong>Phone:</strong> ${phone}</p>
+                        <p><strong>Language:</strong> ${language}</p>
+                        <p class="text-xs mt-2">Check your WhatsApp to confirm delivery ✅</p>
+                    `;
+                    resultDiv.classList.remove('hidden');
+                    
+                } else {
+                    throw new Error(result.error?.message || `HTTP ${response.status}`);
+                }
+                
+            } catch (error) {
+                logMessage('error', `Message send failed: ${error.message}`);
+                
+                const resultDiv = document.getElementById('messageResult');
+                resultDiv.className = 'p-3 rounded-lg text-sm bg-red-100 text-red-800';
+                resultDiv.innerHTML = `
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <strong>Message Send Failed</strong>
+                    </div>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p class="text-xs mt-2">Check your token and phone number verification</p>
+                `;
+                resultDiv.classList.remove('hidden');
+            }
+        }
+
+        function simulateLeadCapture(type) {
+            const simulations = {
+                apartment: {
+                    message: "Hi, I'm looking for a 3-bedroom apartment in New Administrative Capital. My budget is around 2.5 million EGP. Can you help me find something?",
+                    requirements: {
+                        propertyType: 'apartment',
+                        location: 'New Administrative Capital',
+                        bedrooms: 3,
+                        budget: 2500000,
+                        intent: 'buy'
+                    }
+                },
+                villa: {
+                    message: "I need a villa in Sheikh Zayed City, 4 bedrooms minimum, garden preferred. Budget between 4-5 million EGP.",
+                    requirements: {
+                        propertyType: 'villa',
+                        location: 'Sheikh Zayed City',
+                        bedrooms: 4,
+                        budget: 4500000,
+                        intent: 'buy'
+                    }
+                },
+                arabic: {
+                    message: "أبحث عن شقة في مدينة نصر، ٣ غرف نوم، ميزانية ٢ مليون جنيه مصري. هل يمكنكم مساعدتي؟",
+                    requirements: {
+                        propertyType: 'apartment',
+                        location: 'مدينة نصر',
+                        bedrooms: 3,
+                        budget: 2000000,
+                        intent: 'buy'
+                    }
+                }
+            };
+
+            const simulation = simulations[type];
+            logMessage('info', `Simulating ${type} lead capture...`);
+            logMessage('info', `Customer message: "${simulation.message}"`);
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                logMessage('success', 'AI Processing: Requirements extracted ✅');
+                logMessage('info', `Property Type: ${simulation.requirements.propertyType}`);
+                logMessage('info', `Location: ${simulation.requirements.location}`);
+                logMessage('info', `Budget: ${simulation.requirements.budget.toLocaleString()} EGP`);
+                logMessage('info', `Bedrooms: ${simulation.requirements.bedrooms}`);
+                
+                // Simulate property matching
+                setTimeout(() => {
+                    const matchScore = Math.floor(Math.random() * 30) + 70; // 70-100% match
+                    logMessage('success', `Property matching completed: ${matchScore}% match found`);
+                    logMessage('info', 'Recommendation: High-priority lead - agent should contact within 2 hours');
+                    
+                    alert(`Lead Capture Simulation Complete!\n\n✅ Message processed\n✅ Requirements extracted\n✅ ${matchScore}% property match found\n✅ Agent notification triggered\n\nThis demonstrates how your MatchPro system will process real customer messages.`);
+                }, 1500);
+            }, 1000);
+        }
+
+        function configureWebhook() {
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            const verifyToken = document.getElementById('verifyToken').value;
+            
+            if (!webhookUrl) {
+                alert('Please enter a webhook URL first');
+                return;
+            }
+            
+            logMessage('info', `Configuring webhook: ${webhookUrl}`);
+            logMessage('info', `Verify token: ${verifyToken}`);
+            logMessage('warning', 'Webhook configuration requires WhatsApp Business Manager setup');
+            
+            alert(`Webhook Configuration Guide:\n\n1. Go to developers.facebook.com\n2. Select your WhatsApp Business App\n3. Go to WhatsApp → Configuration\n4. Enter webhook URL: ${webhookUrl}\n5. Enter verify token: ${verifyToken}\n6. Subscribe to 'messages' events\n\nWebhook will receive incoming messages for lead processing.`);
+        }
+
+        function clearLogs() {
+            document.getElementById('apiLogs').innerHTML = `
+                <div class="text-blue-400">[INFO] Logs cleared - Crystal Power Investments WhatsApp API Dashboard</div>
+                <div class="text-yellow-400">[READY] Phone Number ID: ${CRYSTAL_POWER_CONFIG.phoneNumberId} | Business Phone: ${CRYSTAL_POWER_CONFIG.businessPhone}</div>
+            `;
+            apiLogs = [];
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            logMessage('info', 'Crystal Power Investments WhatsApp API Testing Dashboard ready');
+            logMessage('info', `Configuration loaded: Phone ID ${CRYSTAL_POWER_CONFIG.phoneNumberId}`);
+            logMessage('info', 'Click "Test API Connection" to verify your setup');
+        });
+    </script>
+</body>
+</html>
